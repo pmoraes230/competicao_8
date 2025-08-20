@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% block header %}
+{% include 'partials/header/header.html' %}
+{% endblock %}
+
+<main class="container">
+    {% if messages %}
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 color_azul" id="messageModalLabel">Aviso</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        {% for message in messages %}
+                        <li class="{{ message.tags }} list-group-item">{{ message }}</li>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn_laranja color_preto" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <h1 class="text-center color_azul mt-4 mb-4">Ingressos gerados</h1>
+    <div class="row">
+        {% for ticket in tickets %}
+        <div class="col-sm-4 mb-3 mb-sm-0">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title color_rosa">Nome do cliente: <span class="color_preto">{{ticket.client.name}}</span></h5>
+                    <p class="card-text color_rosa">Nome do setor comprado: <span class="color_preto">{{ticket.sector.name}}</span></p>
+                    <p class="card-text color_rosa">Horário de compra: <span class="color_preto">{{ticket.date_issue|date:"d/m/Y H:i" }}</span></p>
+                    <p class="card-text color_rosa">Status do ingresso: <span class="color_preto">{{ticket.status }}</span></p>
+                    <p class="card-text color_rosa">Status do ingresso: <span class="color_preto bold">{{ticket.id_ticket }}</span></p>
+                    <div class="d-flex align-items-center justify-content-between">
+                        <a href="{% url "ticket_export" ticket.id_ticket %}" class="btn btn_verde color_preto">gerar PDF</a>
+                        <a href="#" class="btn btn_rosa color_preto">Cancelar ingresso</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</main>
+
+{% endblock %}
+{% block footer %}
+{% include "partials/footer/footer.html" %}
+{% endblock %}

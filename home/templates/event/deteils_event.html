@@ -54,7 +54,7 @@
             <div class="line_description mt-3 mb-3"></div>
             <div class="buttons_event">
                 <a href="{% url 'deteils_event' event.id %}" class="btn btn_azul color_preto">Editar evento</a>
-                <a href="{% url 'deteils_event' event.id %}" class="btn btn_verde color_preto">Ingressos gerados</a>
+                <a href="{% url 'list_ticket' event.id %}" class="btn btn_verde color_preto">Ingressos gerados</a>
                 <a href="{% url 'deteils_event' event.id %}" class="btn btn_laranja color_preto">Apagar evento</a>
                 <a href="{% url 'deteils_event' event.id %}" class="btn btn_amarelo color_preto">Setores</a>
             </div>
@@ -113,7 +113,6 @@
         </div>
     </form>
     {% endif %}
-
 </main>
 
 {% endblock %}

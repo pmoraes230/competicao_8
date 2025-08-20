@@ -1,14 +1,14 @@
 const btnValidation = document.getElementById("btn_validation");
-const campInput = document.getElementById("id_ticket");
+const campInput = document.getElementById("id_ticket")
 
-function changeInput() {
+function handleBtnValidation() {
     if(campInput.value.trim() !== "") {
-        btnValidation.removeAttribute("disabled");
+        btnValidation.removeAttribute("disabled")
     } else {
-        btnValidation.setAttribute("disabled", "true");
+        btnValidation.setAttribute("disabled", true)
     }
 }
 
-changeInput()
+handleBtnValidation()
 
-campInput.addEventListener("input", changeInput)
+campInput.addEventListener("input", handleBtnValidation)

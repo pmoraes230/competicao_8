@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <title>Document</title>
+    <style>
+        body {
+            font-family: "Roboto Condensed", sans-serif;
+        }
+        .container_all {
+            position: relative;
+            z-index: -99;
+            left: 0;
+        }
+        .container_inf {
+            position: absolute;
+            top: 23%;
+            left: 15%;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .size-big {
+            font-size: 40px;
+        }
+        .bold {
+            font-weight: bold;
+        }
+        .color_azul {
+            color: #1331A1;
+        }
+        .color_rosa {
+            color: #F31366;
+        }
+        .color_preto {
+            color: #010101;
+        }
+        .size_medium {
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container_all">
+        <div class="img_ticket">
+            <img src="http://127.0.0.1:8000/static/images/A5.png" alt="">
+        </div>
+        <div class="container_inf">
+            <h1 class="text-center bold size-big color_azul">Ingresso</h1>
+            <p class="card-text size_medium color_rosa">Nome do cliente: <span class="color_preto">{{ticket.client.name}}</span></p>
+            <p class="card-text size_medium color_rosa">Nome do evento: <span class="color_preto">{{ticket.event.event_name}}</span></p>
+            <p class="card-text size_medium color_rosa">Nome do setor: <span class="color_preto">{{ticket.sector.name}}</span></p>
+            <p class="card-text size_medium color_rosa">Data de emissão: <span class="color_preto">{{ticket.date_issue|date:"d/m/Y H:i"}}</span></p>
+            <p class="card-text size_medium color_rosa">ID do ingresso: <span class="color_preto">{{ticket.id_ticket}}</span></p>
+        </div>
+    </div>
+</body>
+</html>

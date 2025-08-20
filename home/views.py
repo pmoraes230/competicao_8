@@ -3,11 +3,14 @@ from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import logout
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from . import models
 import uuid
+import pdfkit
 
 # Create your views here.
 def get_user_profile(request):
@@ -169,3 +172,28 @@ def buy_ticket(request, id_event):
         'sectors': sector
     })
     return render(request, "event/details_event.html", context)
+
+def list_tickets(request, id_event):
+    context = get_user_profile(request)
+    context['tickets'] = models.Ticket.objects.filter(event=id_event).order_by("-date_issue")
+    return render(request, "event/list_ticket.html", context)
+
+def export_ticket(request, id_ticket):
+    ticket = get_object_or_404(models.Ticket, id_ticket=id_ticket)
+    html = render_to_string("event/ticket.html", {"ticket": ticket})
+    configuration = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    
+    options = {
+        'page-size': 'A6',
+        'orientation': "Portrait",
+        'encoding': "UTF-8"
+    }
+    
+    try:
+        pdf = pdfkit.from_string(html, False, options=options, configuration=configuration)
+        response = HttpResponse(content_type="Application/pdf")
+        response["Content-Dispositon"] = f"attachment; filename='ingresso_event_{ticket.event.event_name}_client_{ticket.client.name}.pdf'"
+        response.write(pdf)
+        return response
+    except Exception as e:
+        return HttpResponse(f"Erro ao gerar o pdf: {str(e)}")

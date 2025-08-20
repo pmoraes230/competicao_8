@@ -135,5 +135,9 @@ main {
 }
 
 .success {
-    color: var(--verde);
+    color: #6d8802;
+}
+
+.bold {
+    font-weight: bold;
 }

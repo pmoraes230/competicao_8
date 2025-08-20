@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'styles/deteils_event.css' %}">
+{% endblock %}
+
+{% block content %}
+{% block header %}
+{% include 'partials/header/header.html' %}
+{% endblock %}
+
+<main class="container">
+    {% if messages %}
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 color_azul" id="messageModalLabel">Aviso</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        {% for message in messages %}
+                        <li class="{{ message.tags }} list-group-item">{{ message }}</li>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn_laranja color_preto" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <h1 class="text-center mt-4 mb-4 color_azul">Dashboard</h1>
+    <form action="" method="post" class="container">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_event" class="form-label color_azul">Eventos existentes no sistema</label>
+            <select name="id_event" id="id_event" class="form-select">
+                <option value="#" selected disabled>Selecione um evento</option>
+                {% for event in events %}
+                <option value="{{ event.id }}">{{ event.event_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn_verde color_preto">Pesquisar evento</button>
+        </div>
+    </form>
+
+    {% if event %}
+    <div class="d-flex mt-4 mb-3">
+        <div class="image_event">
+            <img src="{{ event.image_event.url }}" alt="{{ event.event_name }}" class="image">
+        </div>
+        <div class="info_event">
+            <h1 class="h1 color_azul font_bold">{{ event.event_name }}</h1>
+            <div class="d-flex mt-4 mb-4">
+                <div class="bg_laranja container_inf">
+                    <img src="{% static 'images/CalendarRange.svg' %}" alt="calendar">
+                    <span class="color_preto font_bold">{{ event.date_event|date:"d/m/Y" }}</span>
+                </div>
+                <div class="bg_laranja container_inf">
+                    <img src="{% static 'images/Alarm.svg' %}" alt="alarm">
+                    <span class="color_preto font_bold">{{ event.hour_event|time:"H:i" }}</span>
+                </div>
+            </div>
+            <p class="color_preto h5">{{ event.description }}</p>
+            <div class="line_description mt-3 mb-3"></div>
+        </div>
+    </div>
+    
+    <h4 class="text-center color_azul mt-4">Dados do evento</h4>
+    <div class="row">
+        {% if grafic_sectors %}
+        {% for item in grafic_sectors %}
+        <div class="col-md-6 text-center mb-3">
+            <img src="data:image/png;base64, {{ item.grafic }}" alt="{{ item.sector }}">
+        </div>
+        {% endfor %}
+        {% else %}
+        <p class="color_azul text-center">Sem nenhum dado de venda neste evento</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</main>
+{% endblock %}
+{% block footer %}
+{% include "partials/footer/footer.html" %}
+{% endblock %}
