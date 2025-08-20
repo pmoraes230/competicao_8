@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'styles/deteils_event.css' %}">
+{% endblock %}
+
+{% block content %}
+{% block header %}
+{% include 'partials/header/header.html' %}
+{% endblock %}
+
+<main class="container">
+    {% if messages %}
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 color_azul" id="messageModalLabel">Aviso</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        {% for message in messages %}
+                        <li class="{{ message.tags }} list-group-item">{{ message }}</li>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn_laranja color_preto" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="d-flex mt-4 mb-3">
+        <div class="image_event">
+            <img src="{{ event.image_event.url }}" alt="{{ event.event_name }}" class="image">
+        </div>
+        <div class="info_event">
+            <h1 class="h1 color_azul font_bold">{{ event.event_name }}</h1>
+            <div class="d-flex mt-4 mb-4">
+                <div class="bg_laranja container_inf">
+                    <img src="{% static 'images/CalendarRange.svg' %}" alt="calendar">
+                    <span class="color_preto font_bold">{{ event.date_event|date:"d/m/Y" }}</span>
+                </div>
+                <div class="bg_laranja container_inf">
+                    <img src="{% static 'images/Alarm.svg' %}" alt="alarm">
+                    <span class="color_preto font_bold">{{ event.hour_event|time:"H:i" }}</span>
+                </div>
+            </div>
+            <p class="color_preto h5">{{ event.description }}</p>
+            <div class="line_description mt-3 mb-3"></div>
+            <div class="buttons_event">
+                <a href="{% url 'deteils_event' event.id %}" class="btn btn_azul color_preto">Editar evento</a>
+                <a href="{% url 'deteils_event' event.id %}" class="btn btn_verde color_preto">Ingressos gerados</a>
+                <a href="{% url 'deteils_event' event.id %}" class="btn btn_laranja color_preto">Apagar evento</a>
+                <a href="{% url 'deteils_event' event.id %}" class="btn btn_amarelo color_preto">Setores</a>
+            </div>
+        </div>
+    </div>
+
+    {% if not client %}
+    <h1 class="color_azul">Pesquisar cliente</h1>
+    <form action="{% url 'deteils_event' event.id %}" method="post">
+        {% csrf_token %}
+        <label for="name_client" class="form-label color_azul">Nome do cliente:</label>
+        <input type="text" name="name_client" id="name_client" class="form-control color_azul" placeholder="Insira o nome do cliente aqui">
+        <div class="buttons mt-2">
+            <button type="submit" name="search_clients" class="btn btn_verde color_preto">Pesquisar cliente</button>
+            <a href="#" class="btn btn_amarelo color_preto">Cadastrar cliente</a>
+        </div>
+    </form>
+    {% if search_client %}
+    <h4 class="h4 color_azul mt-4">Clientes encontrados</h4>
+    <ul class="list-group">
+        {% for client in search_client %}
+        <li class="list-group-item">
+            {{ client.name }}
+            <form action="{% url 'deteils_event' event.id %}" method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="client_id" value="{{ client.id }}">
+                <button type="submit" name="client_selected" class="btn btn_verde color_preto">Selecionar</button>
+            </form>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% else %}
+    <h1 class="h1 font_bold color_azul">Venda de ingresso</h1>
+    <p class="color_azul font_bold">Cliente para venda: {{ client.name }}</p>
+
+    <form action="{% url 'buy_ticket' event.id %}" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="sector_event" class="form-label color_azul">Selecione o setor</label>
+            <select name="sector_event" id="sector_event" class="form-select color_azul">
+                <option value="" selected disabled>Selecione um setor do evento</option>
+                {% for sector in sectors %}
+                <option value="{{ sector.id }}">{{ sector.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="ticket_event" class="form-label color_azul">Selecione a quantidade de ingresso</label>
+            <input type="number" name="ticket_event" id="ticket_event" class="form-control color_azul" placeholder="Insira a quantidade de ingresso">
+        </div>
+
+        <div class="buttons">
+            <button type="submit" name="buy_ticket" class="btn btn_verde color_preto">Comprar</button>
+            <a href="{% url 'deteils_event' event.id %}" class="btn btn_laranja color_preto">Cancelar compra</a>
+        </div>
+    </form>
+    {% endif %}
+
+</main>
+
+{% endblock %}
+{% block footer %}
+{% include "partials/footer/footer.html" %}
+{% endblock %}

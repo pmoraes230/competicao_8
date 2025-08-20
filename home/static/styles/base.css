@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+    --cinza: #F8F4EC;
+    --verde: #A2CA02;
+    --amarelo: #F8B62F;
+    --laranja: #F44528;
+    --rosa: #F31366;
+    --azul: #1331A1;
+    --preto: #010101;
+}
+
+body {
+    font-family: "Roboto Condensed", sans-serif;
+    background-color: var(--cinza);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+main {
+    flex-grow: 1;
+}
+
+.line_bottom {
+    border-bottom: 4px solid var(--laranja);
+}
+
+.icon_competition {
+    width: 20%;
+    height: auto;
+    margin: 0 10rem;
+}
+
+.space_menu {
+    margin-left: 40rem;
+}
+
+.line_top {
+    border-top: 4px solid var(--laranja);
+}
+
+.font_bold {
+    font-weight: bold;
+}
+
+.color_azul_menu {
+    color: var(--azul);
+}
+
+.color_azul_menu:hover {
+    color: #0b1d61;
+}
+
+.color_azul {
+    color: var(--azul);
+}
+
+.color_rosa {
+    color: var(--rosa);
+}
+
+.color_verde {
+    color: var(--verde);
+}
+
+.color_preto {
+    color: var(--preto);
+}
+
+.bg_preto {
+    background-color: var(--preto);
+}
+
+.btn_rosa {
+    border: 2px solid var(--rosa);
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.btn_rosa:hover {
+    box-shadow: 0 4px 4px 0 var(--rosa);
+}
+
+.btn_verde {
+    border: 2px solid var(--verde);
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.btn_verde:hover {
+    box-shadow: 0 4px 4px 0 var(--verde);
+}
+
+.btn_azul {
+    border: 2px solid var(--azul);
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.btn_azul:hover {
+    box-shadow: 0 4px 4px 0 var(--azul);
+}
+
+.btn_amarelo {
+    border: 2px solid var(--amarelo);
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.btn_amarelo:hover {
+    box-shadow: 0 4px 4px 0 var(--amarelo);
+}
+
+.btn_laranja {
+    border: 2px solid var(--laranja);
+    background-color: transparent;
+    border-radius: 10px;
+}
+
+.btn_laranja:hover {
+    box-shadow: 0 4px 4px 0 var(--laranja);
+}
+
+.g-10 {
+    gap: 10px;
+}
+
+.info {
+    color: var(--laranja);
+}
+
+.error {
+    color: var(--rosa);
+}
+
+.success {
+    color: var(--verde);
+}

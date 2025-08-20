@@ -1,0 +1,32 @@
+.image_event {
+    max-width: 365px;
+}
+
+.image {
+    width: 100%;
+    height: 270px;
+}
+
+.d-flex {
+    gap: 2%;
+}
+
+.bg_laranja {
+    background-color: var(--amarelo);
+    padding: 10px 16px;
+    border-radius: 18px;
+}
+
+.container_inf {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.line_description {
+    border-bottom: 5px solid var(--laranja);
+}
+
+.radius {
+    border-radius: 10px;
+}

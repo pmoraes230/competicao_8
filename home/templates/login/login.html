@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'styles/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<main class="container">
+    {% if messages %}
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="messageModalLabel">Aviso</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        {% for message in messages %}
+                        <li class="{{ message.tags }} list-group-item">{{ message }}</li>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="d-flex">
+        <div class="container_login">
+            <div class="info_login">
+                <img src="{% static 'images/logo.svg' %}" alt="logo" class="logo"> 
+                <h1 class="color_azul text-center">Music Hall</h1>
+                <h4 class="color_azul text-center">Login</h4>
+            </div>
+            <form method="post" class="container_input">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="login" class="form-label color_azul">Login</label>
+                    <input type="text" name="login" id="login" class="form-control color_azul" placeholder="Email ou CPF">
+                </div>
+                <div class="mb-3">
+                    <label for="password" class="form-label color_azul">Senha</label>
+                    <input type="password" name="password" id="password" class="form-control color_azul" placeholder="Insira a sua senha"> 
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn_verde color_preto">Login</button>
+                </div>
+            </form>
+        </div>
+        <div class="container_img">
+            <img src="{% static 'images/img_login.png' %}" alt="img_login" class="image">
+        </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block css_extra %}
+<link rel="stylesheet" href="{% static 'styles/home.css' %}">
+{% endblock %}
+
+{% block content %}
+{% block header %}
+{% if user_role == "Vendedor" %}
+{% include 'partials/header/header_validador.html' %}
+{% else %}
+{% include 'partials/header/header.html' %}
+{% endif %}
+{% endblock %}
+
+<main class="container">
+    {% if messages %}
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="messageModalLabel">Aviso</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        {% for message in messages %}
+                        <li class="{{ message.tags }} list-group-item">{{ message }}</li>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div id="carouselExampleAutoplaying" class="carousel slide mb-3 mt-4" data-bs-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img src="{% static 'images/carousel1.png' %}" class="d-block w-100" alt="images_carousel" />
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/carousel2.png' %}" class="d-block w-100" alt="images_carousel" />
+            </div>
+            <div class="carousel-item">
+                <img src="{% static 'images/carousel3.png' %}" class="d-block w-100" alt="images_carousel" />
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying"
+            data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying"
+            data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+
+    <h1 class="text-center color_rosa">Eventos em destaques</h1>
+    <div class="row">
+        <div class="col-sm-4 mb-3 mb-sm-0">
+            {% for event in events %}
+            <div class="card mb-3">
+                <div class="card-body bg_preto">
+                    <h4 class="h4 card-title color_verde">Senac Music hall</h4>
+                </div>
+                <div class="image_card">
+                    {% if event.image_event %}
+                    <img src="{{ event.image_event.url }}" alt="{{ event.event_name }}" class="image_card">
+                    {% else %}
+                    <img src="{% static 'images/default.png' %}" alt="">
+                    {% endif %}
+                </div>
+                <div class="card-text p-3">
+                    <h1 class="color_rosa">{{ event.event_name }} -</h1>
+                    <h1 class="color_rosa">{{ event.date_event|date:"d/m/Y" }}</h1>
+                </div>
+                <div class="p-3">
+                    <a href="{% url 'deteils_event' event.id %}" class="btn btn_rosa color_preto">Ver detalhes do evento</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</main>
+{% endblock %}
+{% block footer %}
+{% include "partials/footer/footer.html" %}
+{% endblock %}

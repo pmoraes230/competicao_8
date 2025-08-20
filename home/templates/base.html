@@ -1,0 +1,43 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{% static 'images/Logo.svg' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'settings/reset_css.css' %}">
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="{% static 'settings/bootstrap.bundle.min.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- MEU CSS -->
+    <link rel="stylesheet" href="{% static 'styles/base.css' %}">
+    {% block css_extra %}
+    {% endblock %}
+    <title>Music Hall</title>
+</head>
+<body>
+    {% block content %}
+    {% block header %}
+    {% endblock %}
+
+    {% endblock %}
+
+    {% block footer %}
+    {% endblock %}
+
+    <script src="{% static 'settings/bootstrap.bundle.min.js' %}"></script>
+    <script>
+        {% if messages %}
+        document.addEventListener("DOMContentLoaded", function() {
+            let messageModal = new bootstrap.Modal(document.getElementById("messageModal"), {
+                keyboard: true
+            });
+            messageModal.show()
+        })
+        {% endif %}
+    </script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+</html>

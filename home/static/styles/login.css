@@ -1,0 +1,19 @@
+.container_img {
+    position: absolute;
+    right: 0;
+}
+
+.image {
+    height: 100vh;
+    width: 60pc;
+}
+
+.container_login {
+    margin-top: 7rem;
+    width: 25%;
+}
+
+.logo {
+    margin: 0 17%;
+
+}
