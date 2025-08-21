@@ -181,6 +181,14 @@ def list_ticket_generate(request):
     }
     return render(request, "event/list_ticket_generate.html", context)
 
+def list_ticket(request, id_event):
+    context = get_user_profile(request)
+    ticket = models.Ticket.objects.filter(event=id_event)
+    event = models.Event.objects.get(id=id_event)
+    context["event"] = event
+    context['tickets'] = ticket
+    return render(request, "event/list_ticket.html", context)
+
 def export_ticket(request, id_ticket):
     ticket = get_object_or_404(models.Ticket, id_ticket=id_ticket)
     page_html = render_to_string("event/ticket_pdf.html", {'ticket': ticket})
@@ -190,10 +198,6 @@ def export_ticket(request, id_ticket):
         'page-size': 'A5',
         'page-width': "80mm",
         'page-height': "140mm",
-        # 'margin-top': '0.75in',
-        # 'margin-right': '0.75in',
-        # 'margin-bottom': '0.75in',
-        # 'margin-left': '0.75in',
         'encoding': "UTF-8",
     }
     
@@ -201,7 +205,7 @@ def export_ticket(request, id_ticket):
     
     try:
         response = HttpResponse(content_type="application/pdf")
-        response["Content-Disposition"] = f"attachments='ingresso_show_{ticket.event.event_name}_cliente_{ticket.client.name}.pdf'"
+        response["Content-Disposition"] = f"attachment; filename=ingresso_show_{ticket.event.event_name}_cliente_{ticket.client.name}.pdf"
         response.write(pdf)
     
         return response

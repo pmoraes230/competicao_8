@@ -34,10 +34,18 @@
     <ul class="list-group">
         {% for ticket in tickets %}
         <li class="list-group-item d-flex justify-content-between align-items-center color_azul">
-            ingresso: {{ ticket.id_ticket }} <a href="{% url "export_ticket" ticket.id_ticket %}" class="btn btn_verde color_preto"><i class="bi bi-download"></i>Baixar</a>
+            ingresso: {{ ticket.id_ticket }} <a href="{% url " export_ticket" ticket.id_ticket %}"
+                class="btn btn_verde color_preto"><i class="bi bi-download"></i>Baixar</a>
         </li>
         {% endfor %}
     </ul>
+
+    <div class="text-center mt-4">
+        <a href="{% url " home" %}" class="btn btn_rosa color_preto">Finalizar</a>
+    </div>
 </main>
 
+{% endblock %}
+{% block footer %}
+{% include "partials/footer/footer.html" %}
 {% endblock %}

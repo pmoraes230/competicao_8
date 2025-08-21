@@ -54,66 +54,33 @@
             <div class="line_description mt-3 mb-3"></div>
             <div class="buttons_event">
                 <a href="{% url 'deteils_event' event.id %}" class="btn btn_azul color_preto">Editar evento</a>
-                <a href="{% url 'list_ticket' event.id %}" class="btn btn_verde color_preto">Ingressos gerados</a>
+                <a href="{% url 'deteils_event' event.id %}" class="btn btn_verde color_preto">Voltar a tela de venda</a>
                 <a href="{% url 'deteils_event' event.id %}" class="btn btn_laranja color_preto">Apagar evento</a>
                 <a href="{% url 'deteils_event' event.id %}" class="btn btn_amarelo color_preto">Setores</a>
             </div>
         </div>
     </div>
 
-    {% if not client %}
-    <h1 class="color_azul">Pesquisar cliente</h1>
-    <form action="{% url 'deteils_event' event.id %}" method="post">
-        {% csrf_token %}
-        <label for="name_client" class="form-label color_azul">Nome do cliente:</label>
-        <input type="text" name="name_client" id="name_client" class="form-control color_azul" placeholder="Insira o nome do cliente aqui">
-        <div class="buttons mt-2">
-            <button type="submit" name="search_clients" class="btn btn_verde color_preto">Pesquisar cliente</button>
-            <a href="#" class="btn btn_amarelo color_preto">Cadastrar cliente</a>
+    <h1 class="text-center color_azul mt-4 mb-4">Ingressos emitidos</span></h1>
+    <div class="row">
+        {% for ticket in tickets %}
+        <div class="col-sm-4 mb-3 mb-sm-0">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title color_rosa">Nome do cliente: <span class="color_preto">{{ ticket.client.name }}</span></h5>
+                    <p class="card-text color_rosa">Setor comprado: <span class="color_preto">{{ ticket.sector.name }}</span></p>
+                    <p class="card-text color_rosa">Data de emissão do ingresso: <span class="color_preto">{{ ticket.date_issue|date:"d/m/Y H:i" }}</span></p>
+                    <p class="card-text color_rosa">Status do ingresso: <span class="color_preto">{{ ticket.status }}</span></p>
+                    <p class="card-text color_rosa">Código de validação do ingresso: <span class="color_preto h6">{{ ticket.id_ticket }}</span></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url "export_ticket" ticket.id_ticket %}" class="btn btn_verde color_preto"><i class="bi bi-file-earmark-pdf"></i> Emitir PDF</a>
+                        <a href="#" class="btn btn_rosa color_preto"><i class="bi bi-x-circle"></i> Cancelar ingresso</a>
+                    </div>
+                </div>
+            </div>
         </div>
-    </form>
-    {% if search_client %}
-    <h4 class="h4 color_azul mt-4">Clientes encontrados</h4>
-    <ul class="list-group">
-        {% for client in search_client %}
-        <li class="list-group-item">
-            {{ client.name }}
-            <form action="{% url 'deteils_event' event.id %}" method="post" style="display: inline;">
-                {% csrf_token %}
-                <input type="hidden" name="client_id" value="{{ client.id }}">
-                <button type="submit" name="client_selected" class="btn btn_verde color_preto">Selecionar</button>
-            </form>
-        </li>
         {% endfor %}
-    </ul>
-    {% endif %}
-    {% else %}
-    <h1 class="h1 font_bold color_azul">Venda de ingresso</h1>
-    <p class="color_azul font_bold">Cliente para venda: {{ client.name }}</p>
-
-    <form action="{% url 'buy_ticket' event.id %}" method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="sector_event" class="form-label color_azul">Selecione o setor</label>
-            <select name="sector_event" id="sector_event" class="form-select color_azul">
-                <option value="" selected disabled>Selecione um setor do evento</option>
-                {% for sector in sectors %}
-                <option value="{{ sector.id }}">{{ sector.name }}</option>
-                {% endfor %}
-            </select>
-        </div>
-        <div class="mb-3">
-            <label for="ticket_event" class="form-label color_azul">Selecione a quantidade de ingresso</label>
-            <input type="number" name="ticket_event" id="ticket_event" class="form-control color_azul" placeholder="Insira a quantidade de ingresso">
-        </div>
-
-        <div class="buttons">
-            <button type="submit" name="buy_ticket" class="btn btn_verde color_preto">Comprar</button>
-            <a href="{% url 'deteils_event' event.id %}" class="btn btn_laranja color_preto">Cancelar compra</a>
-        </div>
-    </form>
-    {% endif %}
-
+    </div>
 </main>
 
 {% endblock %}
