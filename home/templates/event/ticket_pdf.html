@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+        body {
+            font-family: "Roboto Condensed", sans-serif;
+        }
+        .info_ticket {
+            position: absolute;
+            top: 17%;
+            left: 4%;
+        }
+        .color_azul {
+            color: #1331A1;
+        }
+        .color_rosa {
+            color: #F31366;
+        }
+        .color_preto {
+            color: #010101;
+        }
+        .z_index {
+            z-index: -99;
+        }
+        .text-center {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="img_background z_index">
+        <img src="http://127.0.0.1:8000/static/images/A5.png/" alt="image_ticket" />
+    </div>
+    <div class="info_ticket">
+        <h1 class="text-center color_azul">Ingresso</h1>
+        <div class="inf_person">
+            <p class="color_rosa">Nome do cliente: <span class="color_preto">{{ ticket.client.name }}</span></p>
+            <p class="color_rosa">Evento <span class="color_preto">{{ ticket.event.event_name }}</span></p>
+            <p class="color_rosa">Setor comprado <span class="color_preto">{{ ticket.sector.name }}</span></p>
+            <p class="color_rosa">Data de emissão: <span class="color_preto">{{ ticket.date_issue|date:"d/m/Y H:i" }}</span></p>
+            <p class="color_rosa">ID do ingresso: <span class="color_preto">{{ ticket.id_ticket }}</span></p>
+        </div>
+    </div>
+
+</body>
+
+</html>

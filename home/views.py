@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import logout
@@ -8,6 +9,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from . import models
 import uuid
+import pdfkit
 
 # Create your views here.
 def get_user_profile(request):
@@ -169,3 +171,39 @@ def buy_ticket(request, id_event):
         'sectors': sector
     })
     return render(request, "event/details_event.html", context)
+
+def list_ticket_generate(request):
+    ticket_ids = request.GET.getlist("ticket_ids")
+    ticket = models.Ticket.objects.filter(id_ticket__in=ticket_ids)
+    context = {
+        'tickets': ticket,
+        **get_user_profile(request)
+    }
+    return render(request, "event/list_ticket_generate.html", context)
+
+def export_ticket(request, id_ticket):
+    ticket = get_object_or_404(models.Ticket, id_ticket=id_ticket)
+    page_html = render_to_string("event/ticket_pdf.html", {'ticket': ticket})
+    configuration = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
+    
+    options = {
+        'page-size': 'A5',
+        'page-width': "80mm",
+        'page-height': "140mm",
+        # 'margin-top': '0.75in',
+        # 'margin-right': '0.75in',
+        # 'margin-bottom': '0.75in',
+        # 'margin-left': '0.75in',
+        'encoding': "UTF-8",
+    }
+    
+    pdf = pdfkit.from_string(page_html, False, configuration=configuration, options=options)
+    
+    try:
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = f"attachments='ingresso_show_{ticket.event.event_name}_cliente_{ticket.client.name}.pdf'"
+        response.write(pdf)
+    
+        return response
+    except Exception as ex:
+        return HttpResponse(f"Erro ao gerar ingresso: {str(ex)}")
