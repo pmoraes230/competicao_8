@@ -32,11 +32,15 @@
 
     <h1 class="text-center color_azul mt-4 mb-4">Usuários do sistema</h1>
     <div class="text-center mb-3">
-        <a href="{% url 'register_user' %}" class="btn btn_verde color_preto">Cadastrar novo usuário</a>
+        <a href="{% url 'register_user' %}" class="btn btn_verde color_preto mb-3">Cadastrar novo usuário</a>
+        <div class="mb-3">
+            <label for="searchInput" class="form-label color_azul">Filtro de usuários</label>
+            <input type="text" id="searchInput" class="form-control w-50 mx-auto" placeholder="Pesquise por nome ou email...">
+        </div>
     </div>
     <div class="row">
         {% for user in users %}
-        <div class="col-md-4 mb-3 mb-sm-0">
+        <div class="col-md-4 mb-3 mb-sm-0 user-card" data-name="{{ user.name|lower }}" data-email="{{ user.email|lower }}">
             <div class="card mb-3">
                 <div class="card-body">
                     <h5 class="card-title color_rosa">Nome do usuário: <span class="color_preto">{{ user.name}}</span></h5>
@@ -50,6 +54,8 @@
                 </div>
             </div>
         </div>
+        {% empty %}
+        <p class="color_azul">Nenhum Usuário encontrado</p>
         {% endfor %}
     </div>
 </main>
@@ -57,4 +63,8 @@
 {% endblock %}
 {% block footer %}
 {% include "partials/footer/footer.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'scripts/filter_user.js' %}"></script>
 {% endblock %}
