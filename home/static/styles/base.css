@@ -150,3 +150,12 @@ main {
 .camp_password {
     display: flex;
 }
+
+@media (max-width: 440px) {
+    .container_mobile {
+        display: inline;
+    }
+    .space_menu {
+        margin-left: 0;
+    } 
+}
