@@ -211,3 +211,129 @@ def export_ticket(request, id_ticket):
         return response
     except Exception as ex:
         return HttpResponse(f"Erro ao gerar ingresso: {str(ex)}")
+    
+def list_users(request):
+    context = get_user_profile(request)
+    context['users'] = models.User.objects.all()
+    return render(request, "users/list_users.html", context)
+
+def register_users(request):
+    context = get_user_profile(request)
+    context['profiles'] = models.Profile.objects.all()
+    
+    if request.method == "POST":
+        name_user = request.POST.get("name_user")
+        email_user = request.POST.get("email_user")
+        cpf_user = request.POST.get("cpf_user").replace(".", "").replace("-", "")
+        perfil_user = request.POST.get("perfil_user")
+        password_user = request.POST.get("password_user")
+        Confirmation_password = request.POST.get("Confirmation_password")
+        
+        if not all([name_user, email_user, cpf_user, perfil_user, password_user, Confirmation_password]):
+            messages.info(request, "Todos os campos são de preenchimento obrigatórios antes de enviar o cadastro.")
+            return redirect("register_user")
+        
+        if models.User.objects.filter(cpf=cpf_user).exists():
+            messages.info(request, "CPF informado já cadastro no sistema.")
+            return redirect("register_user")
+        
+        if models.User.objects.filter(email=email_user).exists():
+            messages.info(request, "Email informado já cadastro no sistema.")
+            return redirect("register_user")
+        
+        if password_user != Confirmation_password:
+            messages.info(request, "Senha não coincide com a senha colocada em campo de confirmação")
+            return redirect("register_user")
+        
+        try: 
+            profile = models.Profile.objects.get(id=perfil_user)
+        except models.Profile.DoesNotExist:
+            messages.error(request, "Perfil não existente no sistema.")
+            return redirect("register_user")
+        
+        try:
+            hashers = make_password(Confirmation_password)
+            new_user = models.User.objects.create(
+                name=name_user,
+                email=email_user,
+                cpf=cpf_user,
+                password=hashers,
+                profile=profile
+            )
+            new_user.full_clean()
+            new_user.save()
+            
+            messages.success(request, f"Usuário {new_user.name} cadastrado com sucesso.")
+            return redirect("list_users")
+        except ValueError as ve:
+            messages.error(request, f"Erro ao cadastrar novo usuário: {str(ve)}")
+            
+    return render(request, "users/create_user.html", context)
+
+def update_user(request, id_user):
+    context = get_user_profile(request)
+    try:
+        user = models.User.objects.get(id=id_user)
+    except models.User.DoesNotExist:
+        messages.error(request, "Usuário não encontrado no sistema.")
+        return redirect("update_user")
+    
+    if request.method == "POST":
+        name_user = request.POST.get("name_user")
+        email_user = request.POST.get("email_user")
+        cpf_user = request.POST.get("cpf_user").replace(".", "").replace("-", "")
+        perfil_user = request.POST.get("perfil_user")
+        
+        if not all([name_user, email_user, cpf_user, perfil_user]):
+            messages.info(request, "Todos os campos são de preenchimento obrigatórios antes de enviar o cadastro.")
+            return redirect("update_user", id_user=id_user)
+        
+        if models.User.objects.filter(cpf=cpf_user).exclude(id=id_user).exists():
+            messages.info(request, "CPF informado já cadastro no sistema.")
+            return redirect("update_user", id_user=id_user)
+        
+        if models.User.objects.filter(email=email_user).exclude(id=id_user).exists():
+            messages.info(request, "Email informado já cadastro no sistema.")
+            return redirect("update_user", id_user=id_user)
+        
+        try: 
+            profile = models.Profile.objects.get(id=perfil_user)
+        except models.Profile.DoesNotExist:
+            messages.error(request, "Perfil não existente no sistema.")
+            return redirect("update_user", id_user=id_user)
+        
+        try:
+            user.name = name_user
+            user.email = email_user
+            user.cpf = cpf_user
+            user.profile = profile
+            
+            user.full_clean()
+            user.save()
+            
+            messages.success(request, f"Cadastro do usuário {user.name} atualizado com sucesso.")
+            return redirect("list_users")
+        except ValueError as ve:
+            messages.error(request, f"Erro ao atualizar o cadastro do usuário: {str(ve)}")
+    
+    context.update({
+        'user': user,
+        'profiles': models.Profile.objects.all() 
+    })
+    return render(request, "users/update_user.html", context)
+
+def delete_user(request, id_user):
+    try:
+        user = models.User.objects.get(id=id_user)
+        if request.method == "POST":
+            user.delete()
+            messages.success(request, "Usuário apagado do sistema com sucesso.")
+            return redirect("list_users")
+        context = {
+            'user': user,
+            **get_user_profile(request)
+        }
+        return render(request, "users/delete_user.html", context)
+    except models.User.DoesNotExist:
+        messages.error(request, "Usuário não encontrado.")
+        return redirect("list_users")

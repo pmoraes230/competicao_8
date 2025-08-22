@@ -137,3 +137,16 @@ main {
 .success {
     color: var(--verde);
 }
+
+.icon {
+    width: 25px;
+}
+
+.btn_eye {
+    position: absolute;
+    left: 80%;
+}
+
+.camp_password {
+    display: flex;
+}

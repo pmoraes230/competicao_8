@@ -30,24 +30,31 @@
     </div>
     {% endif %}
 
-    <h1 class="h1 text-center color_azul mt-4 mb-4">Validador</h1>
-
-    <form action="{% url 'validador' %}" method="post">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="id_ticket" class="form-label color_azul">Coloque o código do ingresso</label>
-            <input type="text" name="id_ticket" id="id_ticket" class="form-control color_azul" placeholder="Insira o código do ingresso">
+    <h1 class="text-center color_azul mt-4 mb-4">Usuários do sistema</h1>
+    <div class="text-center mb-3">
+        <a href="{% url 'register_user' %}" class="btn btn_verde color_preto">Cadastrar novo usuário</a>
+    </div>
+    <div class="row">
+        {% for user in users %}
+        <div class="col-md-4 mb-3 mb-sm-0">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title color_rosa">Nome do usuário: <span class="color_preto">{{ user.name}}</span></h5>
+                    <p class="card-text color_rosa">Email do usuário: <span class="color_preto">{{ user.email }}</span></p>
+                    <p class="card-text color_rosa">CPF do usuário: <span class="color_preto">{{ user.cpf }}</span></p>
+                    <p class="card-text color_rosa">Perfil do usuário: <span class="color_preto">{{ user.profile.name }}</span></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'update_user' user.id %}" class="btn btn_laranja color_preto">Editar usuário</a>
+                        <a href="{% url 'delete_user' user.id %}" class="btn btn_rosa color_preto">Apagar usuário</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="text-center">
-            <button type="submit" class="btn btn_verde color_preto" id="btn_validation">Validar</button>
-        </div>
-    </form>
+        {% endfor %}
+    </div>
 </main>
 
 {% endblock %}
 {% block footer %}
 {% include "partials/footer/footer.html" %}
-{% endblock %}
-{% block scripts %}
-<script src="{% static 'scripts/btn_validation.js' %}"></script>
 {% endblock %}
