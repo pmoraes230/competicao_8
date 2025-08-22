@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+{% block header %}
+{% include 'partials/header/header.html' %}
+{% endblock %}
+
+<main class="container">
+    {% if messages %}
+    <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5 color_azul" id="messageModalLabel">Aviso</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="list-group">
+                        {% for message in messages %}
+                        <li class="{{ message.tags }} list-group-item">{{ message }}</li>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn_laranja color_preto" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="d-flex flex-column justify-content-center align-items-center">
+        <h1 class="h1 text-center color_azul">Apagar usuário</h1>
+        <h5 class="h5 text-center color_azul">Tem certeza que deseja apagar o usuário <span class="color_preto">{{ user.name }}</span>?</h5>
+    
+        <form action="" method="post">
+            {% csrf_token %}
+            <div class="mb-3 text-center">
+                <button type="submit" class="btn btn_rosa color_preto">Apagar usuário</button>
+                <a href="{% url 'list_users' %}" class="btn btn_verde color_preto">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</main>
+
+{% endblock %}
+{% block footer %}
+{% include "partials/footer/footer.html" %}
+{% endblock %}

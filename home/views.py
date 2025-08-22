@@ -1,4 +1,5 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
+from django.template.loader import render_to_string
 from django.contrib import messages
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth import logout
@@ -173,27 +174,168 @@ def buy_ticket(request, id_event):
     })
     return render(request, "event/details_event.html", context)
 
-def list_tickets(request, id_event):
+def list_ticket_generate(request):
+    ticket_ids = request.GET.getlist("ticket_ids")
+    ticket = models.Ticket.objects.filter(id_ticket__in=ticket_ids)
+    context = {
+        'tickets': ticket,
+        **get_user_profile(request)
+    }
+    return render(request, "event/list_ticket_generate.html", context)
+
+def list_ticket(request, id_event):
     context = get_user_profile(request)
-    context['tickets'] = models.Ticket.objects.filter(event=id_event).order_by("-date_issue")
+    ticket = models.Ticket.objects.filter(event=id_event)
+    event = models.Event.objects.get(id=id_event)
+    context["event"] = event
+    context['tickets'] = ticket
     return render(request, "event/list_ticket.html", context)
 
 def export_ticket(request, id_ticket):
     ticket = get_object_or_404(models.Ticket, id_ticket=id_ticket)
-    html = render_to_string("event/ticket.html", {"ticket": ticket})
+    page_html = render_to_string("event/ticket_pdf.html", {'ticket': ticket})
     configuration = pdfkit.configuration(wkhtmltopdf="C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe")
     
     options = {
-        'page-size': 'A6',
-        'orientation': "Portrait",
-        'encoding': "UTF-8"
+        'page-size': 'A5',
+        'page-width': "80mm",
+        'page-height': "140mm",
+        'encoding': "UTF-8",
     }
     
+    pdf = pdfkit.from_string(page_html, False, configuration=configuration, options=options)
+    
     try:
-        pdf = pdfkit.from_string(html, False, options=options, configuration=configuration)
-        response = HttpResponse(content_type="Application/pdf")
-        response["Content-Dispositon"] = f"attachment; filename='ingresso_event_{ticket.event.event_name}_client_{ticket.client.name}.pdf'"
+        response = HttpResponse(content_type="application/pdf")
+        response["Content-Disposition"] = f"attachment; filename=ingresso_show_{ticket.event.event_name}_cliente_{ticket.client.name}.pdf"
         response.write(pdf)
+    
         return response
-    except Exception as e:
-        return HttpResponse(f"Erro ao gerar o pdf: {str(e)}")
+    except Exception as ex:
+        return HttpResponse(f"Erro ao gerar ingresso: {str(ex)}")
+    
+def list_users(request):
+    context = get_user_profile(request)
+    context['users'] = models.User.objects.all()
+    return render(request, "users/list_users.html", context)
+
+def register_users(request):
+    context = get_user_profile(request)
+    context['profiles'] = models.Profile.objects.all()
+    
+    if request.method == "POST":
+        name_user = request.POST.get("name_user")
+        email_user = request.POST.get("email_user")
+        cpf_user = request.POST.get("cpf_user").replace(".", "").replace("-", "")
+        perfil_user = request.POST.get("perfil_user")
+        password_user = request.POST.get("password_user")
+        Confirmation_password = request.POST.get("Confirmation_password")
+        
+        if not all([name_user, email_user, cpf_user, perfil_user, password_user, Confirmation_password]):
+            messages.info(request, "Todos os campos são de preenchimento obrigatórios antes de enviar o cadastro.")
+            return redirect("register_user")
+        
+        if models.User.objects.filter(cpf=cpf_user).exists():
+            messages.info(request, "CPF informado já cadastro no sistema.")
+            return redirect("register_user")
+        
+        if models.User.objects.filter(email=email_user).exists():
+            messages.info(request, "Email informado já cadastro no sistema.")
+            return redirect("register_user")
+        
+        if password_user != Confirmation_password:
+            messages.info(request, "Senha não coincide com a senha colocada em campo de confirmação")
+            return redirect("register_user")
+        
+        try: 
+            profile = models.Profile.objects.get(id=perfil_user)
+        except models.Profile.DoesNotExist:
+            messages.error(request, "Perfil não existente no sistema.")
+            return redirect("register_user")
+        
+        try:
+            hashers = make_password(Confirmation_password)
+            new_user = models.User.objects.create(
+                name=name_user,
+                email=email_user,
+                cpf=cpf_user,
+                password=hashers,
+                profile=profile
+            )
+            new_user.full_clean()
+            new_user.save()
+            
+            messages.success(request, f"Usuário {new_user.name} cadastrado com sucesso.")
+            return redirect("list_users")
+        except ValueError as ve:
+            messages.error(request, f"Erro ao cadastrar novo usuário: {str(ve)}")
+            
+    return render(request, "users/create_user.html", context)
+
+def update_user(request, id_user):
+    context = get_user_profile(request)
+    try:
+        user = models.User.objects.get(id=id_user)
+    except models.User.DoesNotExist:
+        messages.error(request, "Usuário não encontrado no sistema.")
+        return redirect("update_user")
+    
+    if request.method == "POST":
+        name_user = request.POST.get("name_user")
+        email_user = request.POST.get("email_user")
+        cpf_user = request.POST.get("cpf_user").replace(".", "").replace("-", "")
+        perfil_user = request.POST.get("perfil_user")
+        
+        if not all([name_user, email_user, cpf_user, perfil_user]):
+            messages.info(request, "Todos os campos são de preenchimento obrigatórios antes de enviar o cadastro.")
+            return redirect("update_user", id_user=id_user)
+        
+        if models.User.objects.filter(cpf=cpf_user).exclude(id=id_user).exists():
+            messages.info(request, "CPF informado já cadastro no sistema.")
+            return redirect("update_user", id_user=id_user)
+        
+        if models.User.objects.filter(email=email_user).exclude(id=id_user).exists():
+            messages.info(request, "Email informado já cadastro no sistema.")
+            return redirect("update_user", id_user=id_user)
+        
+        try: 
+            profile = models.Profile.objects.get(id=perfil_user)
+        except models.Profile.DoesNotExist:
+            messages.error(request, "Perfil não existente no sistema.")
+            return redirect("update_user", id_user=id_user)
+        
+        try:
+            user.name = name_user
+            user.email = email_user
+            user.cpf = cpf_user
+            user.profile = profile
+            
+            user.full_clean()
+            user.save()
+            
+            messages.success(request, f"Cadastro do usuário {user.name} atualizado com sucesso.")
+            return redirect("list_users")
+        except ValueError as ve:
+            messages.error(request, f"Erro ao atualizar o cadastro do usuário: {str(ve)}")
+    
+    context.update({
+        'user': user,
+        'profiles': models.Profile.objects.all() 
+    })
+    return render(request, "users/update_user.html", context)
+
+def delete_user(request, id_user):
+    try:
+        user = models.User.objects.get(id=id_user)
+        if request.method == "POST":
+            user.delete()
+            messages.success(request, "Usuário apagado do sistema com sucesso.")
+            return redirect("list_users")
+        context = {
+            'user': user,
+            **get_user_profile(request)
+        }
+        return render(request, "users/delete_user.html", context)
+    except models.User.DoesNotExist:
+        messages.error(request, "Usuário não encontrado.")
+        return redirect("list_users")

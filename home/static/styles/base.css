@@ -135,9 +135,27 @@ main {
 }
 
 .success {
-    color: #6d8802;
+    color: var(--verde);
 }
 
-.bold {
-    font-weight: bold;
+.icon {
+    width: 25px;
+}
+
+.btn_eye {
+    position: absolute;
+    left: 80%;
+}
+
+.camp_password {
+    display: flex;
+}
+
+@media (max-width: 440px) {
+    .container_mobile {
+        display: inline;
+    }
+    .space_menu {
+        margin-left: 0;
+    } 
 }

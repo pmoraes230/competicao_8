@@ -34,6 +34,25 @@
     </div>
     {% endif %}
 
+    <h1 class="text-center color_azul mt-4 mb-4">Dashboard</h1>
+
+    <form action="{% url 'dash' %}" method="post">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="input_event" class="form-label color_azul">Pesquise o nome do evento</label>
+            <select name="input_event" id="input_event" class="form-select color_azul">
+                <option value="" disabled selected>Selecione um evento</option>
+                {% for event in events %}
+                <option value="{{ event.id }}">{{ event.event_name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="text-center">
+            <button type="submit" class="btn btn_verde color_preto">Pesquisar</button>
+        </div>
+    </form>
+
+    {% if event %}
     <div class="d-flex mt-4 mb-3">
         <div class="image_event">
             <img src="{{ event.image_event.url }}" alt="{{ event.event_name }}" class="image">
@@ -52,35 +71,22 @@
             </div>
             <p class="color_preto h5">{{ event.description }}</p>
             <div class="line_description mt-3 mb-3"></div>
-            <div class="buttons_event">
-                <a href="{% url 'deteils_event' event.id %}" class="btn btn_azul color_preto">Editar evento</a>
-                <a href="{% url 'deteils_event' event.id %}" class="btn btn_verde color_preto">Voltar a tela de venda</a>
-                <a href="{% url 'deteils_event' event.id %}" class="btn btn_laranja color_preto">Apagar evento</a>
-                <a href="{% url 'deteils_event' event.id %}" class="btn btn_amarelo color_preto">Setores</a>
-            </div>
         </div>
     </div>
 
-    <h1 class="text-center color_azul mt-4 mb-4">Ingressos emitidos</span></h1>
+    <h3 class="h3 text-center color_azul">Detalhes de vendas</h3>
     <div class="row">
-        {% for ticket in tickets %}
-        <div class="col-sm-4 mb-3 mb-sm-0">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title color_rosa">Nome do cliente: <span class="color_preto">{{ ticket.client.name }}</span></h5>
-                    <p class="card-text color_rosa">Setor comprado: <span class="color_preto">{{ ticket.sector.name }}</span></p>
-                    <p class="card-text color_rosa">Data de emissão do ingresso: <span class="color_preto">{{ ticket.date_issue|date:"d/m/Y H:i" }}</span></p>
-                    <p class="card-text color_rosa">Status do ingresso: <span class="color_preto">{{ ticket.status }}</span></p>
-                    <p class="card-text color_rosa">Código de validação do ingresso: <span class="color_preto h6">{{ ticket.id_ticket }}</span></p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="{% url "export_ticket" ticket.id_ticket %}" class="btn btn_verde color_preto"><i class="bi bi-file-earmark-pdf"></i> Emitir PDF</a>
-                        <a href="#" class="btn btn_rosa color_preto"><i class="bi bi-x-circle"></i> Cancelar ingresso</a>
-                    </div>
-                </div>
+        {% if grafic_sectors %}
+        {% for item in grafic_sectors %}
+            <div class="col-md-6 mb-3 text-center">
+                <img src="data:image/png;base64, {{ item.grafic }}" alt="{{ item.sector }}" class="rounded">
             </div>
-        </div>
         {% endfor %}
+        {% else %}
+        <p class="text-center color_azul">Sem informações de venda</p>
+        {% endif %}
     </div>
+    {% endif %}
 </main>
 
 {% endblock %}
